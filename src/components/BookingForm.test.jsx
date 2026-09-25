@@ -3,12 +3,16 @@ import BookingForm from './BookingForm';
 
 const availableTimes = ['17:00', '18:00', '19:00'];
 
-const renderBookingForm = (dispatch = jest.fn()) => {
+const renderBookingForm = (dispatch = jest.fn(), submitForm = jest.fn()) => {
   render(
-    <BookingForm availableTimes={availableTimes} dispatch={dispatch} />
+    <BookingForm
+      availableTimes={availableTimes}
+      dispatch={dispatch}
+      submitForm={submitForm}
+    />
   );
 
-  return dispatch;
+  return { dispatch, submitForm };
 };
 
 test('renders the booking fields and available times', () => {
@@ -22,7 +26,7 @@ test('renders the booking fields and available times', () => {
 });
 
 test('dispatches the selected date to update available times', () => {
-  const dispatch = renderBookingForm();
+  const { dispatch } = renderBookingForm();
   const dateInput = screen.getByLabelText(/choose date/i);
 
   fireEvent.change(dateInput, { target: { value: '2026-10-01' } });
@@ -35,8 +39,8 @@ test('dispatches the selected date to update available times', () => {
 });
 
 test('updates booking fields and submits the reservation', () => {
-  const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
-  renderBookingForm();
+  const submitForm = jest.fn();
+  renderBookingForm(jest.fn(), submitForm);
 
   fireEvent.change(screen.getByLabelText(/number of guests/i), {
     target: { value: '4' }
@@ -46,12 +50,10 @@ test('updates booking fields and submits the reservation', () => {
   });
   fireEvent.click(screen.getByRole('button', { name: /make your reservation/i }));
 
-  expect(consoleLog).toHaveBeenCalledWith('Reservation details:', {
+  expect(submitForm).toHaveBeenCalledWith({
     date: '',
     time: '17:00',
     guests: '4',
     occasion: 'Anniversary'
   });
-
-  consoleLog.mockRestore();
 });

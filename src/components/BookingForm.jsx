@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function BookingForm({ availableTimes, dispatch }) {
+export default function BookingForm({ availableTimes, dispatch, submitForm }) {
   // Define state variables for each field
   const [date, setDate] = useState('');
   const [time, setTime] = useState('17:00');
@@ -9,8 +9,7 @@ export default function BookingForm({ availableTimes, dispatch }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Reservation details:", { date, time, guests, occasion });
-    // Future API submission can be handled here
+    submitForm({ date, time, guests, occasion });
   };
 
   return (
